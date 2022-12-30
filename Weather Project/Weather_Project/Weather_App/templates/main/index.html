@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <!--=====FIRST=====-->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="stylesheet" href="{% static 'styleV9.css' %}">-->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+
+    <!--=====TITLE=====-->
+    <title>Weather Project</title>
+</head>
+<style>
+.bar a {
+    float:right;
+    display: block;
+    color: black;
+    padding: 0px 35px;
+    text-align: center;
+    text-decoration: none;
+    min-width: 50px;
+}
+
+.bar a::after{
+    content: "";
+    display: block;
+    width: 0px;
+    height: 9px;
+    border-radius: 100px;
+    left:50%;
+    position:relative;
+    background: #31c0ff;
+    text-align: center;
+    transition: width .3s;
+}
+
+.bar a:hover::after{
+    animation: hover 0.5s forwards;
+    transition: width .3s;
+}
+
+@keyframes hover {
+    from{
+        left:50%;
+        width: 0%;
+        transition: width .3s;
+    }
+    to{
+        left:0%;
+        width:100%;
+        transition: width .3s;
+    }
+}
+
+.search_box_wrapper .search_box_item .input_search{
+  background-color: #d5eef8;
+  border: 1;
+  color: #000000;
+  border-radius: 25px;
+  border-color: #000000;
+  width: 70%;
+  height: 70%;
+  padding-left: 20px;
+}
+
+.search_box_wrapper .search_box_item .search_button{
+  width: 150px;
+  height: 35px;
+  border-radius: 25px;
+  border: 1;
+  border-color: #000000;
+  text-transform: uppercase;
+  transition: all 0.5s ease;
+}
+.error1 {
+    padding-top: 15px;
+    font-size: 20px;
+}
+
+.error2 {
+    padding-top: 15px;
+    font-size: 20px;
+}
+</style>
+<body>
+  <!--=====HEADER=====-->
+  <header class="header p-4 text-center shadow fixed-top bg-white">
+      <h4 class="text-uppercase font-weight-bold">Weather</h4>
+      <div class="mt-3">
+        <div class="justify-content-between">
+            <nav class="bar d-inline-flex p-2 pt-3 bd-highlight shadow rounded-pill">
+                <a href="#W_Miescie" class = "nav_link px-4">In Cities</a>
+                <a href="#Dla_Narciarzy" class = "nav_link px-4">For Skiers</a>
+                <div class="box"></div>
+            </nav>
+        </div>
+      </div>
+  </header>
+
+<main class="main">
+
+    <section class="Pogoda_w_miescie" id = "W_Miescie">
+        <div class = "Pogoda_w_miescie_container d-flex">
+            <div class = "Lewo col-5 h-100 text-center" style="padding-top: 10rem; box-shadow: 5px 0 5px -5px #333;">
+                <h5 class="pt-5">Enter the city where you want to check the weather:</h5>
+                <nav class="search_box_wrapper" style="padding-top: 40px">
+                    <form method="post" class="col-md">
+                        {% csrf_token %}
+                        <div class="search_box_item">
+                            <div class="search_box" style="height: 50px">
+                                <input type="text" class="input_search" name="city" placeholder="Choose Your City ...">
+                                <button type="submit" class="search_button">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </nav>
+                {% if city and temp and pressure and humidity %}
+                <div class="city_name_and_date pt-4">
+                    <h5><span class="badge badge-primary"></span> {{date}}</h5>
+                    <h5 class="napis">Current weather:</h5>
+                </div>
+                <div class="card_and_graph d-flex">
+                    <div class="card_for_weather col-5 px-3 align-self-center">
+                        <div class="card_body shadow-sm text-center" style="background-color: #dbdbdb; border-radius: 30px; padding: 15px;">
+                            <h3 class="city"><span class="badge badge-primary"></span> {{city}}</h3>
+                            <h5 class="temp"><span class="badge badge-primary"></span> {{temp}}</h5>
+                            <h5 class="icon"><span class="badge badge-primary"></span><img class="zdj" src="http://openweathermap.org/img/w/{{icon}}.png" alt="Image" style="width:90px"></h5>
+                            <h5 class="weather pb-3"><span class="badge badge-primary"></span> {{main}} </h5>
+                            <div class="others" style="text-align: left; padding-left: 55px">
+                                <h5 class="other" style="font-size: 18px;"><span class="badge-primary">Pressure :</span> {{pressure}} </h5>
+                                <h5 class="other" style="font-size: 18px;"><span class="badge-primary">Humidity : </span> {{humidity}}</h5>
+                                <h5 class="other" style="font-size: 18px;"><span class="badge-primary">Temp. min :</span> {{temp_min}}</h5>
+                                <h5 class="other" style="font-size: 18px;"><span class="badge-primary">Temp. max :</span> {{temp_max}}</h5>
+                                <h5 class="other" style="font-size: 18px;"><span class="badge-primary">Wind speed : </span> {{wind}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="graph_container col-7" style="padding-right: 8px;">
+                        <div class="graph">
+                            {% autoescape off %}
+                                {{ graph }}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if error1 %}
+                <h4 class="error1">{{error1}}</h4>
+                <div class="blank_space_container" style="padding:20rem;">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class = "Prawo col-7 h-100" style="padding-top: 10rem">
+                <h5 class="pt-5 text-center pb-3">Advanced weather overview:</h5>
+                {% if city and temp and pressure and humidity %}
+                <div class="days d-flex justify-content-center text-center pt-4">
+                    <div class="day px-3">
+                        <div class="day1" style="border-radius: 30px; box-shadow: 0 0 5px #333; padding: 25px; background-color: #dbdbdb;">
+                            <h5 class="day_date"><span class="badge badge-primary"></span> {{day1_date}}</h5>
+                            <h5><span class="badge badge-primary"></span> {{day1}}</h5>
+                            <h5 class="icon"><span class="badge badge-primary"></span><img class="zdj" src="http://openweathermap.org/img/w/{{day1_icon}}.png" alt="Image" style="width:90px"></h5>
+                            <h5><span class="badge badge-primary"></span> {{day1_main}} </h5>
+                        </div>
+                    </div>
+                    <div class="day px-3">
+                        <div class="day2" style="border-radius: 30px; box-shadow: 0 0 5px #333; padding: 25px; background-color: #dbdbdb;">
+                            <h5 class="day_date"><span class="badge badge-primary"></span> {{day2_date}}</h5>
+                            <h5><span class="badge badge-primary"></span> {{day2}}</h5>
+                            <h5 class="icon"><span class="badge badge-primary"></span><img class="zdj" src="http://openweathermap.org/img/w/{{day2_icon}}.png" alt="Image" style="width:90px"></h5>
+                            <h5><span class="badge badge-primary"></span> {{day2_main}} </h5>
+                        </div>
+                    </div>
+                    <div class="day px-3">
+                        <div class="day3" style="border-radius: 30px; box-shadow: 0 0 5px #333; padding: 25px; background-color: #dbdbdb;">
+                            <h5 class="day_date"><span class="badge badge-primary"></span> {{day3_date}}</h5>
+                            <h5><span class="badge badge-primary"></span> {{day3}}</h5>
+                            <h5 class="icon"><span class="badge badge-primary"></span><img class="zdj" src="http://openweathermap.org/img/w/{{day3_icon}}.png" alt="Image" style="width:90px"></h5>
+                            <h5><span class="badge badge-primary"></span> {{day3_main}} </h5>
+                        </div>
+                    </div>
+                    <div class="day px-3">
+                        <div class="day4" style="border-radius: 30px; box-shadow: 0 0 5px #333; padding: 25px; background-color: #dbdbdb;">
+                            <h5 class="day_date"><span class="badge badge-primary"></span> {{day4_date}}</h5>
+                            <h5><span class="badge badge-primary"></span> {{day4}}</h5>
+                            <h5 class="icon"><span class="badge badge-primary"></span><img class="zdj" src="http://openweathermap.org/img/w/{{day4_icon}}.png" alt="Image" style="width:90px"></h5>
+                            <h5><span class="badge badge-primary"></span> {{day4_main}} </h5>
+                        </div>
+                    </div>
+                    <div class="day px-3">
+                        <div class="day5" style="border-radius: 30px; box-shadow: 0 0 5px #333; padding: 25px; background-color: #dbdbdb;">
+                            <h5 class="day_date"><span class="badge badge-primary"></span> {{day5_date}}</h5>
+                            <h5><span class="badge badge-primary"></span> {{day5}}</h5>
+                            <h5 class="icon"><span class="badge badge-primary"></span><img class="zdj" src="http://openweathermap.org/img/w/{{day5_icon}}.png" alt="Image" style="width:90px"></h5>
+                            <h5><span class="badge badge-primary"></span> {{day5_main}} </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map text-center pt-5">
+                    {{ map|safe }}
+                </div>
+
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="blank space">
+        {% if start %}
+        <div class="blank_space_container" style="padding:20rem;">
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="Pogoda_dla_narciarzy text-center" id = "Dla_Narciarzy">
+        <div class="blank_space_container2" style="padding: 5rem;">
+        </div>
+        <div class="Pogoda_dla_narciarzy_container h-100">
+            <div class="search_bar">
+                <h5>Enter the country where you want to check the weather for max 100 highest mountains:</h5>
+                <nav class="search_box_wrapper pt-4 pb-4">
+                    <form method="post" class="col-md">
+                        {% csrf_token %}
+                        <div class="search_box_item">
+                            <div class="search_box">
+                                <input type="text" class="input_search" style="height:35px" name="country" placeholder="Choose Your Country ...">
+                                <button type="submit" class="search_button">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </nav>
+            </div>
+            {% if country %}
+                <h4><span class="badge badge-primary"></span>Weather for highest mountains in {{country}} </h4>
+                <div class="radio_buttons_container d-flex justify-content-center text-center pt-3 pb-3" style="font-size: 20px;">
+                    <div class="radio_button px-3">
+                        <input class="rb0" type="radio" id="today" name="date" value="today">
+                        <label for="today">{{today}}</label><br>
+                    </div>
+
+                    <div class="radio_button px-3">
+                        <input class="rb1" type="radio" id="next_day1" name="date" value="next_day1">
+                        <label for="next_day1">{{next_day1}}</label><br>
+                    </div>
+
+                    <div class="radio_button px-3">
+                        <input class="rb2" type="radio" id="next_day2" name="date" value="next_day2">
+                        <label for="next_day2">{{next_day2}}</label><br>
+                    </div>
+
+                    <div class="radio_button px-3">
+                        <input class="rb3" type="radio" id="next_day3" name="date" value="next_day3">
+                        <label for="next_day3">{{next_day3}}</label><br>
+                    </div>
+
+                    <div class="radio_button px-3">
+                        <input class="rb4" type="radio" id="next_day4" name="date" value="next_day4">
+                        <label for="next_day4">{{next_day4}}</label><br>
+                    </div>
+
+                    <div class="radio_button px-3">
+                        <input class="rb5" type="radio" id="next_day5" name="date" value="next_day5">
+                        <label for="next_day5">{{next_day5}}</label><br>
+                    </div>
+                </div>
+                <div class="map2" id="map2"></div>
+                <script>
+                    const today = document.querySelector('input[id="today"]');
+                    const next_day1 = document.querySelector('input[id="next_day1"]');
+                    const next_day2 = document.querySelector('input[id="next_day2"]');
+                    const next_day3 = document.querySelector('input[id="next_day3"]');
+                    const next_day4 = document.querySelector('input[id="next_day4"]');
+                    const next_day5 = document.querySelector('input[id="next_day5"]');
+
+                    today.addEventListener('change', today_map);
+                    next_day1.addEventListener('change', next_day1_map);
+                    next_day2.addEventListener('change', next_day2_map);
+                    next_day3.addEventListener('change', next_day3_map);
+                    next_day4.addEventListener('change', next_day4_map);
+                    next_day5.addEventListener('change', next_day5_map);
+
+                    function today_map(e) {
+                        if (this.checked) {
+                            document.querySelector('#map2').innerHTML = "{{ map2_0|escapejs }}";
+                        }
+                    }
+
+                    function next_day1_map(e) {
+                        if (this.checked) {
+                            document.querySelector('#map2').innerHTML = "{{ map2_1|escapejs }}";
+                        }
+                    }
+
+                    function next_day2_map(e) {
+                        if (this.checked) {
+                            document.querySelector('#map2').innerHTML = "{{ map2_2|escapejs }}";
+                        }
+                    }
+
+                    function next_day3_map(e) {
+                        if (this.checked) {
+                            document.querySelector('#map2').innerHTML = "{{ map2_3|escapejs }}";
+                        }
+                    }
+
+                    function next_day4_map(e) {
+                        if (this.checked) {
+                            document.querySelector('#map2').innerHTML = "{{ map2_4|escapejs }}";
+                        }
+                    }
+
+                    function next_day5_map(e) {
+                        if (this.checked) {
+                            document.querySelector('#map2').innerHTML = "{{ map2_5|escapejs }}";
+                        }
+                    }
+                </script>
+                <div class="blank_space_container2" style="padding:5rem;">
+                </div>
+            {% endif %}
+
+            {% if start %}
+                <div class="blank_space_container" style="padding:20rem;">
+                </div>
+            {% endif %}
+
+            {% if error2 %}
+                <h4 class="error2">{{error2}}</h4>
+                <div class="blank_space_container" style="padding:20rem;">
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>
