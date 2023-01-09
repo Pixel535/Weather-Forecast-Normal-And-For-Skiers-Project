@@ -10,5 +10,10 @@ The web application has two functions. The first one is based on OpenWeatherAPI 
 
 * Python 3.11
 * HTML
-* Django
-* Bootstrap 5.2.3
+* Django 4.1.3
+* Bootstrap 5.3
+* Folium 0.13.0
+* Beautifulsoup4 4.11.1
+* Geopy 2.3.0
+* Requests 2.28.1
+* Plotly 5.11.0
